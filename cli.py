@@ -14,6 +14,7 @@ def cli():
 @click.option('--svn',          '-s', default=False, is_flag=True, help='Only update svn repositories')
 @click.option('--git',          '-g', default=False, is_flag=True, help='Only update git repositories')
 def update(folder, svn, git):
+    """Run 'git pull' or 'git svn rebase' for all repositories in workspace"""
     for repo in __git_folders_as_repos(__get_git_folders(folder)):
         __update(repo, __is_svn_or_git(repo))
 
@@ -23,6 +24,7 @@ def update(folder, svn, git):
 @click.option('--svn',          '-s', default=False, is_flag=True, help='Only check svn repositories')
 @click.option('--git',          '-g', default=False, is_flag=True, help='Only check git repositories')
 def status(folder, svn, git):
+    """Run 'git status' for all repositories in workspace"""
     for repo in __git_folders_as_repos(__get_git_folders(folder)):
         __status(repo)
 
@@ -49,6 +51,11 @@ def __git_folders_as_repos(git_folder_paths):
 
 
 def __is_svn_or_git(git_repo):
+    """
+    Run 'git config --list' and check if the line containing 'url' contains 'git' or 'svn'
+        e.g.    remote.origin.url=https://github.com/seppaleinen/workspace-cli.git
+        e.g.    svn-remote.svn.url=http://svn.example.nu/svn/
+    """
     url = ''
     for i in git_repo.git.config('--list').splitlines():
         if 'url' in i:
@@ -57,6 +64,7 @@ def __is_svn_or_git(git_repo):
 
 
 def __update(git_repo, git_or_svn):
+    """Depending on if the repo is git or svn, run 'git pull' or 'git svn rebase' and print results"""
     try:
         result = git_repo.git.pull() if git_or_svn == 'git' else git_repo.git.svn('rebase')
     except exc.GitCommandError as error:
@@ -65,6 +73,7 @@ def __update(git_repo, git_or_svn):
 
 
 def __status(git_repo):
+    """Run 'git status' and print results"""
     try:
         result = git_repo.git.status()
     except exc.GitCommandError as error:
