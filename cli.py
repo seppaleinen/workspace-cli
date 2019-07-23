@@ -96,8 +96,10 @@ def __stash_push(git_repo):
 def __stash_pop(git_repo):
     """Stash pop if automatic stash is in stash list"""
     try:
-        if 'Automatic stash' in git_repo.git.stash('list').splitlines():
-            git_repo.git.stash('pop')
+        if 'Automatic stash' in git_repo.git.stash('list'):
+            asd = git_repo.git.stash('pop')
+            if 'error: could not restore untracked files from stash' in asd:
+                raise exc.GitCommandError(asd)
     except exc.GitCommandError as error:
         print("Error: %s" % error)
         raise error
