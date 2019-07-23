@@ -19,14 +19,12 @@ def update(folder, svn, git):
 
 
 @cli.command('status', short_help='Check status of repositories')
-@click.option('--folder',       '-f', default=None, help='Check status of repositories under this folder')
+@click.option('--folder',       '-f', default=os.getcwd(), help='Check status of repositories under this folder')
 @click.option('--svn',          '-s', default=None, help='Only check svn repositories')
 @click.option('--git',          '-g', default=None, help='Only check git repositories')
 def status(folder, svn, git):
     for repo in __git_folders_as_repos(__get_git_folders(folder)):
         __status(repo)
-
-    print("folder: {folder}, svn: {svn}, git: {git}".format(folder=folder, svn=svn, git=git))
 
 
 @cli.command('clone', short_help='Clone repositories')
