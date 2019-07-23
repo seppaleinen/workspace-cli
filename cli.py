@@ -11,8 +11,8 @@ def cli():
 
 @cli.command('update', short_help='Update repositories')
 @click.option('--folder',       '-f', default=os.getcwd(), help='Update repositories under this folder (absolute paths only)')
-@click.option('--svn',          '-s', default=None, help='Only update svn repositories')
-@click.option('--git',          '-g', default=None, help='Only update git repositories')
+@click.option('--svn',          '-s', default=False, is_flag=True, help='Only update svn repositories')
+@click.option('--git',          '-g', default=False, is_flag=True, help='Only update git repositories')
 def update(folder, svn, git):
     for repo in __git_folders_as_repos(__get_git_folders(folder)):
         __update(repo, __is_svn_or_git(repo))
@@ -20,8 +20,8 @@ def update(folder, svn, git):
 
 @cli.command('status', short_help='Check status of repositories')
 @click.option('--folder',       '-f', default=os.getcwd(), help='Check status of repositories under this folder')
-@click.option('--svn',          '-s', default=None, help='Only check svn repositories')
-@click.option('--git',          '-g', default=None, help='Only check git repositories')
+@click.option('--svn',          '-s', default=False, is_flag=True, help='Only check svn repositories')
+@click.option('--git',          '-g', default=False, is_flag=True, help='Only check git repositories')
 def status(folder, svn, git):
     for repo in __git_folders_as_repos(__get_git_folders(folder)):
         __status(repo)
