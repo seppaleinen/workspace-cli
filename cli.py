@@ -66,9 +66,12 @@ def __is_svn_or_git(git_repo):
 def __update(git_repo, git_or_svn):
     """Depending on if the repo is git or svn, run 'git pull' or 'git svn rebase' and print results"""
     try:
+        __stash_push(git_repo)
         result = git_repo.git.pull() if git_or_svn == 'git' else git_repo.git.svn('rebase')
     except exc.GitCommandError as error:
         result = "Error: %s" % error
+    finally:
+        __stash_pop(git_repo)
     print("Result on updating %s: %s" % (git_repo.working_dir, result))
 
 
@@ -79,6 +82,25 @@ def __status(git_repo):
     except exc.GitCommandError as error:
         result = "Error: %s" % error
     print("Result on status %s: %s" % (git_repo.working_dir, result))
+
+
+def __stash_push(git_repo):
+    """Stash repo before running update"""
+    try:
+        git_repo.git.stash('push', '-am', "'Automatic stash'")
+    except exc.GitCommandError as error:
+        print("Error: %s" % error)
+        raise error
+
+
+def __stash_pop(git_repo):
+    """Stash pop if automatic stash is in stash list"""
+    try:
+        if 'Automatic stash' in git_repo.git.stash('list').splitlines():
+            git_repo.git.stash('pop')
+    except exc.GitCommandError as error:
+        print("Error: %s" % error)
+        raise error
 
 
 if __name__ == '__main__':
